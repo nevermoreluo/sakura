@@ -1,6 +1,6 @@
 from google.protobuf import message
 from google.protobuf.descriptor import FieldDescriptor
-import jsonutils
+from sakura import jsonutils
 import re
 
 TYPE_CALLABLE_MAP = {

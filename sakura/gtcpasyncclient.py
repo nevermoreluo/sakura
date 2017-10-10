@@ -2,8 +2,9 @@ from tornado.tcpclient import TCPClient
 import socket
 import platform
 import struct
-from logger import log
-import event_loop
+from sakura.logger import log
+from sakura import event_loop
+
 
 class GTcpAsyncClient(object):
 

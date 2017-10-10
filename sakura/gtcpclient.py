@@ -2,7 +2,7 @@ import socket
 import struct
 import json
 import platform
-from logger import log
+from sakura.logger import log
 
 class GTcpClient(object):
 

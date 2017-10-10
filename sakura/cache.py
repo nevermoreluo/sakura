@@ -8,7 +8,7 @@ import random
 from collections import defaultdict
 import platform
 import re
-from conhash import ConHash
+from sakura.conhash import ConHash
 
 _PY2 = sys.version_info[0] == 2
 

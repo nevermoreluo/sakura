@@ -4,9 +4,8 @@ import platform
 from tornado.ioloop import IOLoop
 from tornado.tcpserver import TCPServer
 import socket
-from logger import log
-import crypt
-from simplequeue import SimpleQueue
+from sakura.logger import log
+from sakura.simplequeue import SimpleQueue
 
 IPV6_V4_PREFIX = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff'
 IPV6_SIZE = 16

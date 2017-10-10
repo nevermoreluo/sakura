@@ -1,5 +1,5 @@
 from logging.handlers import *
-import ipc
+from sakura import ipc
 import os, sys, traceback
 import platform
 

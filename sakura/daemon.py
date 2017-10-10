@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
-import sys, os, time, atexit
+import sys, os, atexit
 import signal
 import platform
-import osutils
+from sakura import osutils
+
 
 class Daemon:
     """
