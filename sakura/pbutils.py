@@ -2,6 +2,12 @@ from google.protobuf import message
 from google.protobuf.descriptor import FieldDescriptor
 from sakura import jsonutils
 import re
+import sys
+
+_PY2 = sys.version_info[0] == 2
+
+if not _PY2:
+    long = int
 
 TYPE_CALLABLE_MAP = {
     FieldDescriptor.TYPE_DOUBLE: float,
