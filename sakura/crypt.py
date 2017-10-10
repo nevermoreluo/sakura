@@ -15,9 +15,9 @@ if not _PY2:
     xrange = range
 
 # if platform.system().lower() == 'darwin':
-#     from cpplib_osx import xtea_encrypt, xtea_decrypt, garena_xtea_encrypt, garena_xtea_decrypt
+#     from sakura.cpplib_osx import xtea_encrypt, xtea_decrypt, garena_xtea_encrypt, garena_xtea_decrypt
 # else:
-#     from cpplib import xtea_encrypt, xtea_decrypt, garena_xtea_encrypt, garena_xtea_decrypt
+#     from sakura.cpplib import xtea_encrypt, xtea_decrypt, garena_xtea_encrypt, garena_xtea_decrypt
 
 DWORD_BYTES = 4
 QDWORD_BYTES = 8

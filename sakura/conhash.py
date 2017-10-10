@@ -1,6 +1,6 @@
 import platform
 
 if platform.system().lower() == 'darwin':
-    from cpplib_osx import ConHash
+    from sakura.cpplib_osx import ConHash
 else:
-    from cpplib import ConHash
+    from sakura.cpplib import ConHash
