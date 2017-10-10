@@ -1,3 +1,4 @@
+import sys
 import random
 import struct
 import platform
@@ -6,6 +7,12 @@ from tornado.tcpserver import TCPServer
 import socket
 from sakura.logger import log
 from sakura.simplequeue import SimpleQueue
+
+
+_PY2 = sys.version_info[0] == 2
+
+if not _PY2:
+    xrange = range
 
 IPV6_V4_PREFIX = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff'
 IPV6_SIZE = 16
@@ -18,6 +25,7 @@ GTCP_CMD_ERROR = '\x02'
 GTCP_CMD_CONNECT = '\x11'
 GTCP_CMD_DISCONNECT = '\x12'
 GTCP_CMD_NOTIFY = '\x13'
+
 
 class TcpEndpoint(object):
 
