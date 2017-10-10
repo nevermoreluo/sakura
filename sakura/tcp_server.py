@@ -188,11 +188,11 @@ class Processor(object):
                 request = self._client.receive()
                 if request is None:
                     # log.warn('tcp_worker_lost_connection|client_id=%s,client=%s', self._client.id.encode('hex'), self._client.remote_address)
-                    log.warn('tcp worker lost_connection|client_id=%s,client=%s', self._id.encode('hex'), self._client._address)
+                    log.warn('tcp worker lost_connection|client_id=%s,client=%s', self._id, self._client._address)
                     self._client.close()
                 elif len(request) < GTCP_HEADER_SIZE:
                     # log.error('tcp_worker_request_packet_error|client_id=%s,client=%s,request=%s', self._client.id.encode('hex'), self._client.remote_address, request.encode('hex'))
-                    log.error('tcp_worker_request_packet_error|client_id=%s,client=%s,request=%s', self._id.encode('hex'), self._client._address, request.encode('hex'))
+                    log.error('tcp_worker_request_packet_error|client_id=%s,client=%s,request=%s', self._id, self._client._address, request.encode('hex'))
                     self._client.close()
                 else:
                     request_cmd = request[:GTCP_CMD_SIZE]
