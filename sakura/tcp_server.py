@@ -180,7 +180,7 @@ class Processor(object):
     def run(self):
         random.seed()
         self.on_init()
-        from gtcpclient import GTcpClient
+        from sakura.gtcpclient import GTcpClient
         log.info('tcp_worker_start|id=%d', self._id)
         self._client = GTcpClient(self._config.WORK_ENDPOINT['address'], self._config.WORK_ENDPOINT['port'], 0)
         while True:
