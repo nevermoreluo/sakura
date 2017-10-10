@@ -8,6 +8,7 @@ _PY2 = sys.version_info[0] == 2
 
 if not _PY2:
     long = int
+    unicode = str
 
 TYPE_CALLABLE_MAP = {
     FieldDescriptor.TYPE_DOUBLE: float,
