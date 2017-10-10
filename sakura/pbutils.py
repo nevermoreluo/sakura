@@ -3,7 +3,7 @@ from google.protobuf.descriptor import FieldDescriptor
 from sakura import jsonutils
 import re
 import sys
-
+from six import iteritems
 _PY2 = sys.version_info[0] == 2
 
 if not _PY2:
@@ -215,12 +215,12 @@ class _PatternValidator(_ItemValidator):
 
 def _create_validator(schema):
     validators = {'v': []}
-    for key, value in schema.iteritems():
+    for key, value in iteritems(schema):
         if key == 'type':
             validators['t'] = value
         elif key == 'properties':
             validators['f'] = {}
-            for pname, pvalue in value.iteritems():
+            for pname, pvalue in iteritems(value):
                 validators['f'][pname] = _create_validator(pvalue)
         elif key == 'required':
             for field_name in value:
@@ -253,7 +253,7 @@ def _validate_iter_errors(instance, validator, path='.'):
             if result is not None:
                 yield result
         if 'f' in validator:
-            for fname, fvalidator in validator['f'].iteritems():
+            for fname, fvalidator in iteritems(validator['f']):
                 if fvalidator.get('t') == 'array' or instance.HasField(fname):
                     fvalue = getattr(instance, fname)
                     for error in _validate_iter_errors(fvalue, fvalidator, path + '/' + fname):

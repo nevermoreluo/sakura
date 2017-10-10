@@ -724,7 +724,7 @@ class SsdbCache(BaseCache):
             keys = [self.key_prefix + key for key in keys]
         values = self._client.multi_get(*keys)
         if self.key_prefix:
-            values = dict([(key[len(self.key_prefix):], value) for key, value in values.iteritems()])
+            values = dict([(key[len(self.key_prefix):], value) for key, value in _iteritems(values)])
         return values
 
     def set(self, key, value, timeout=None, noreply=False):
@@ -1015,7 +1015,7 @@ class DistributionCache(BaseCache):
             if client is None:
                 return False
             query_table[client][key] = data[key]
-        for client, query in query_table.iteritems():
+        for client, query in _iteritems(query_table):
             if not client.set_many(query, timeout, noreply):
                 return False
         return True
@@ -1034,7 +1034,7 @@ class DistributionCache(BaseCache):
                 return None
             query_table[client].append(key)
         values = {}
-        for client, query in query_table.iteritems():
+        for client, query in _iteritems(query_table):
             result = client.get_many(query)
             if result is None:
                 return None
@@ -1054,7 +1054,7 @@ class DistributionCache(BaseCache):
             if client is None:
                 return False
             query_table[client].append(key)
-        for client, query in query_table.iteritems():
+        for client, query in _iteritems(query_table):
             if not client.delete_many(query, noreply):
                 return False
         return True
