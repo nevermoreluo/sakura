@@ -3,6 +3,8 @@ import struct
 import json
 import platform
 from sakura.logger import log
+from sakura.version_tools import byteshex
+
 
 class GTcpClient(object):
 
@@ -29,17 +31,24 @@ class GTcpClient(object):
         except Exception as ex:
             self.close()
             if not self._retry:
-                log.exception('tcp_send_fail|error=send_fail,address=%s,port=%u,request=%s', self._address, self._port, request.encode('hex'))
+                # log.exception('tcp_send_fail|error=send_fail,address=%s,port=%u,request=%s', self._address, self._port, request.encode('hex'))
+                log.exception('tcp_send_fail|error=send_fail,address=%s,port=%u,request=%s', self._address, self._port, byteshex(request))
                 return False
-            log.warn('tcp_send_fail|error=send_fail_will_retry,address=%s,port=%u,retry=0,request=%s,ex=%s', self._address, self._port, request.encode('hex'), ex)
+            # log.warn('tcp_send_fail|error=send_fail_will_retry,address=%s,port=%u,retry=0,request=%s,ex=%s', self._address, self._port, request.encode('hex'), ex)
+            log.warn('tcp_send_fail|error=send_fail_will_retry,address=%s,port=%u,retry=0,request=%s,ex=%s',
+                     self._address, self._port, byteshex(request), ex)
             if not self._connect():
-                log.exception('tcp_send_fail|error=retry_reconnect,address=%s,port=%u,retry=0,request=%s', self._address, self._port, request.encode('hex'))
+                # log.exception('tcp_send_fail|error=retry_reconnect,address=%s,port=%u,retry=0,request=%s', self._address, self._port, request.encode('hex'))
+                log.exception('tcp_send_fail|error=retry_reconnect,address=%s,port=%u,retry=0,request=%s',
+                              self._address, self._port, byteshex(request))
                 return False
             try:
                 self._socket.sendall(packet)
                 return True
             except Exception as ex:
-                log.exception('tcp_send_fail|error=retry_send_fail,address=%s,port=%u,retry=1,request=%s', self._address, self._port, request.encode('hex'))
+                # log.exception('tcp_send_fail|error=retry_send_fail,address=%s,port=%u,retry=1,request=%s', self._address, self._port, request.encode('hex'))
+                log.exception('tcp_send_fail|error=retry_send_fail,address=%s,port=%u,retry=1,request=%s',
+                              self._address, self._port, byteshex(request))
                 self.close()
                 return False
 
@@ -67,27 +76,39 @@ class GTcpClient(object):
         except Exception as ex:
             self.close()
             if not self._retry:
-                log.exception('tcp_request_fail|error=recv_length_fail,address=%s,port=%u,request=%s', self._address, self._port, request.encode('hex'))
+                # log.exception('tcp_request_fail|error=recv_length_fail,address=%s,port=%u,request=%s', self._address, self._port, request.encode('hex'))
+                log.exception('tcp_request_fail|error=recv_length_fail,address=%s,port=%u,request=%s', self._address,
+                              self._port, byteshex(request))
                 return None
             if isinstance(ex, socket.timeout):
-                log.exception('tcp_request_fail|error=recv_length_timeout,address=%s,port=%u,retry=0,request=%s', self._address, self._port, request.encode('hex'))
+                # log.exception('tcp_request_fail|error=recv_length_timeout,address=%s,port=%u,retry=0,request=%s', self._address, self._port, request.encode('hex'))
+                log.exception('tcp_request_fail|error=recv_length_timeout,address=%s,port=%u,retry=0,request=%s',
+                              self._address, self._port, byteshex(request))
                 return None
-            log.warn('tcp_request_fail|error=recv_length_fail_will_retry,address=%s,port=%u,retry=0,request=%s,ex=%s', self._address, self._port, request.encode('hex'), ex)
+            # log.warn('tcp_request_fail|error=recv_length_fail_will_retry,address=%s,port=%u,retry=0,request=%s,ex=%s', self._address, self._port, request.encode('hex'), ex)
+            log.warn('tcp_request_fail|error=recv_length_fail_will_retry,address=%s,port=%u,retry=0,request=%s,ex=%s',
+                     self._address, self._port, byteshex(request), ex)
             if not self._connect():
-                log.exception('tcp_request_fail|error=retry_reconnect,address=%s,port=%u,retry=0,request=%s', self._address, self._port, request.encode('hex'))
+                # log.exception('tcp_request_fail|error=retry_reconnect,address=%s,port=%u,retry=0,request=%s', self._address, self._port, request.encode('hex'))
+                log.exception('tcp_request_fail|error=retry_reconnect,address=%s,port=%u,retry=0,request=%s',
+                              self._address, self._port, byteshex(request))
                 return None
             try:
                 self._socket.sendall(packet)
                 length_data = self._recv(4)
             except Exception as ex:
-                log.exception('tcp_request_fail|error=retry_recv_length_fail,address=%s,port=%u,retry=1,request=%s', self._address, self._port, request.encode('hex'))
+                # log.exception('tcp_request_fail|error=retry_recv_length_fail,address=%s,port=%u,retry=1,request=%s', self._address, self._port, request.encode('hex'))
+                log.exception('tcp_request_fail|error=retry_recv_length_fail,address=%s,port=%u,retry=1,request=%s',
+                              self._address, self._port, byteshex(request))
                 self.close()
                 return None
         try:
             length = struct.unpack('<I', length_data)[0]
             return self._recv(length)
         except Exception as ex:
-            log.exception('tcp_request_fail|error=recv_data_fail,address=%s,port=%u,request=%s', self._address, self._port, request.encode('hex'))
+            # log.exception('tcp_request_fail|error=recv_data_fail,address=%s,port=%u,request=%s', self._address, self._port, request.encode('hex'))
+            log.exception('tcp_request_fail|error=recv_data_fail,address=%s,port=%u,request=%s', self._address,
+                          self._port, byteshex(request))
             self.close()
             return None
 
@@ -118,7 +139,7 @@ class GTcpClient(object):
             return False
 
     def _recv(self, length):
-        data = ''
+        data = b''
         while length > 0:
             recv_data = self._socket.recv(length)
             recv_length = len(recv_data)

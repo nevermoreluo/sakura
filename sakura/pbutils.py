@@ -9,6 +9,12 @@ _PY2 = sys.version_info[0] == 2
 if not _PY2:
     long = int
     unicode = str
+    byteshex = lambda b: b.encode("hex")
+    bytesunhex = lambda b: b.decode("hex")
+else:
+    import binascii
+    byteshex = lambda b: binascii.hexlify(b)
+    bytesunhex = lambda b: binascii.unhexlify(b)
 
 TYPE_CALLABLE_MAP = {
     FieldDescriptor.TYPE_DOUBLE: float,
@@ -25,7 +31,7 @@ TYPE_CALLABLE_MAP = {
     FieldDescriptor.TYPE_SFIXED64: long,
     FieldDescriptor.TYPE_BOOL: bool,
     FieldDescriptor.TYPE_STRING: unicode,
-    FieldDescriptor.TYPE_BYTES: lambda b: b.encode("hex"),
+    FieldDescriptor.TYPE_BYTES: byteshex,
     FieldDescriptor.TYPE_ENUM: int,
 }
 

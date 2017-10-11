@@ -1,4 +1,3 @@
-import sys
 import random
 import struct
 import platform
@@ -7,24 +6,20 @@ from tornado.tcpserver import TCPServer
 import socket
 from sakura.logger import log
 from sakura.simplequeue import SimpleQueue
+from sakura.version_tools import byteshex, xrange
 
 
-_PY2 = sys.version_info[0] == 2
-
-if not _PY2:
-    xrange = range
-
-IPV6_V4_PREFIX = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff'
+IPV6_V4_PREFIX = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff'
 IPV6_SIZE = 16
 GTCP_PACKET_STUB_SIZE = 20
 GTCP_CMD_SIZE = 1
 GTCP_HEADER_SIZE = GTCP_CMD_SIZE + GTCP_PACKET_STUB_SIZE
-GTCP_CMD_RELAY = '\x00'
-GTCP_CMD_NONE = '\x01'
-GTCP_CMD_ERROR = '\x02'
-GTCP_CMD_CONNECT = '\x11'
-GTCP_CMD_DISCONNECT = '\x12'
-GTCP_CMD_NOTIFY = '\x13'
+GTCP_CMD_RELAY = b'\x00'
+GTCP_CMD_NONE = b'\x01'
+GTCP_CMD_ERROR = b'\x02'
+GTCP_CMD_CONNECT = b'\x11'
+GTCP_CMD_DISCONNECT = b'\x12'
+GTCP_CMD_NOTIFY = b'\x13'
 
 
 class TcpEndpoint(object):
@@ -74,11 +69,13 @@ class TcpEndpoint(object):
         self._parse()
         return self._port
 
+
 class WorkerTask(object):
     def __init__(self, client, cmd, packet=''):
         self.client = client
         self.cmd = cmd
         self.packet = packet
+
 
 class GTcpConnection(object):
 
@@ -141,7 +138,8 @@ class GTcpConnection(object):
 
     def _on_recv_header(self, data):
         if len(data) != self.HEADER_SIZE:
-            log.error('tcp_conn_header_size_error|remote=%s,header=%s', self._remote_address, data.encode('hex'))
+            # log.error('tcp_conn_header_size_error|remote=%s,header=%s', self._remote_address, data.encode('hex'))
+            log.error('tcp_conn_header_size_error|remote=%s,header=%s', self._remote_address, byteshex(data))
             self._stream.close()
             return
         (body_size,) = struct.unpack('<I', data)
@@ -188,11 +186,11 @@ class Processor(object):
                 request = self._client.receive()
                 if request is None:
                     # log.warn('tcp_worker_lost_connection|client_id=%s,client=%s', self._client.id.encode('hex'), self._client.remote_address)
-                    log.warn('tcp worker lost_connection|client_id=%s,client=%s', self._id, self._client._address)
+                    log.warn('tcp worker lost_connection|client_id=%s,client=%s', byteshex(self._id), self._client._address)
                     self._client.close()
                 elif len(request) < GTCP_HEADER_SIZE:
                     # log.error('tcp_worker_request_packet_error|client_id=%s,client=%s,request=%s', self._client.id.encode('hex'), self._client.remote_address, request.encode('hex'))
-                    log.error('tcp_worker_request_packet_error|client_id=%s,client=%s,request=%s', self._id, self._client._address, request.encode('hex'))
+                    log.error('tcp_worker_request_packet_error|client_id=%s,client=%s,request=%s', byteshex(self._id), self._client._address, byteshex(request))
                     self._client.close()
                 else:
                     request_cmd = request[:GTCP_CMD_SIZE]
@@ -281,15 +279,18 @@ class GTcpServer(TCPServer):
     def _on_client_connect(self, stream, address):
         client = GTcpConnection(stream, address, self._config, self._on_client_packet, self._on_client_close)
         if client.id in self._clients:
-            log.error('tcp_server_dup_client|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
+            # log.error('tcp_server_dup_client|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
+            log.error('tcp_server_dup_client|id=%s,remote=%s', client.id, client.remote_address)
         self._clients[client.id] = client
         self._handle_task(client, GTCP_CMD_CONNECT, '')
-        log.info('tcp_server_client_connect|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
+        # log.info('tcp_server_client_connect|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
+        log.info('tcp_server_client_connect|id=%s,remote=%s', client.id, client.remote_address)
 
     def _on_worker_connect(self, stream, address):
         worker = GTcpConnection(stream, address, self._config, self._on_worker_packet, self._on_worker_close)
         worker.running_task = None
-        log.info('tcp_server_worker_connect|id=%s,remote=%s', worker.id.encode('hex'), worker.remote_address)
+        # log.info('tcp_server_worker_connect|id=%s,remote=%s', worker.id.encode('hex'), worker.remote_address)
+        log.info('tcp_server_worker_connect|id=%s,remote=%s', worker.id, worker.remote_address)
         self._on_worker_idle(worker)
 
     def _handle_task(self, client, cmd, data=''):
@@ -303,9 +304,11 @@ class GTcpServer(TCPServer):
         self._handle_task(client, GTCP_CMD_RELAY, data)
 
     def _on_client_close(self, client):
-        log.info('tcp_server_client_close|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
+        # log.info('tcp_server_client_close|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
+        log.info('tcp_server_client_close|id=%s,remote=%s', byteshex(client.id), client.remote_address)
         if client.id not in self._clients:
-            log.error('tcp_server_close_conn_not_found|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
+            # log.error('tcp_server_close_conn_not_found|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
+            log.error('tcp_server_close_conn_not_found|id=%s,remote=%s', byteshex(client.id), client.remote_address)
             return
         self._handle_task(client, GTCP_CMD_DISCONNECT, '')
         del self._clients[client.id]
@@ -314,7 +317,9 @@ class GTcpServer(TCPServer):
         client = worker.running_task.client
         packet_size = len(data)
         if packet_size < GTCP_HEADER_SIZE:
-            log.error('tcp_worker_reply_error|client_id=%s,client=%s,reply=%s', client.id.encode('hex'), client.remote_address, data.encode('hex'))
+            # log.error('tcp_worker_reply_error|client_id=%s,client=%s,reply=%s', client.id.encode('hex'), client.remote_address, data.encode('hex'))
+            log.error('tcp_worker_reply_error|client_id=%s,client=%s,reply=%s', byteshex(client.id),
+                      client.remote_address, data.encode('hex'))
             worker.running_task.client.close()
             return
         reply_cmd = data[:1]
@@ -324,7 +329,9 @@ class GTcpServer(TCPServer):
             if reply_client in self._clients:
                 self._clients[reply_client].send_packet(reply_data)
             else:
-                log.error('tcp_reply_client_not_found|client_id=%s,reply=%s', reply_client.encode('hex'), reply_data.encode('hex'))
+                # log.error('tcp_reply_client_not_found|client_id=%s,reply=%s', reply_client.encode('hex'), reply_data.encode('hex'))
+                log.error('tcp_reply_client_not_found|client_id=%s,reply=%s', byteshex(reply_client),
+                          byteshex(reply_data))
                 worker.running_task.client.close()
         if reply_cmd != GTCP_CMD_NOTIFY:
             self._on_worker_idle(worker)

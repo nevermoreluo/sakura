@@ -4,6 +4,7 @@ import platform
 import struct
 from sakura.logger import log
 from sakura import event_loop
+from sakura.version_tools import byteshex
 
 
 class GTcpAsyncClient(object):
@@ -95,7 +96,8 @@ class GTcpAsyncClient(object):
             try:
                 self._on_receive_packet_callback(self, data)
             except:
-                log.exception('tcp_asnyc_client_on_receive_exception|id=%s,packet=%s', self._id, data.encode('hex'))
+                # log.exception('tcp_asnyc_client_on_receive_exception|id=%s,packet=%s', self._id, data.encode('hex'))
+                log.exception('tcp_asnyc_client_on_receive_exception|id=%s,packet=%s', self._id, byteshex(data))
         self._recv_header()
 
     def _set_keep_alive(self):

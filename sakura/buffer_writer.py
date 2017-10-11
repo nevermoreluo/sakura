@@ -8,7 +8,7 @@ class BufferWriter():
 
     @property
     def buffer(self):
-        return ''.join(self._buffer)
+        return b''.join(self._buffer)
 
     def set_endian(self, endian):
         self._endian = endian

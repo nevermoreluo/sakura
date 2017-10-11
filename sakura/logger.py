@@ -320,6 +320,16 @@ class Logger:
         return Logger.logger
 
 
+def append_exc(func):
+    def _append_exc(*args,**kwargs):
+        if 'exc_info' not in kwargs:
+            kwargs['exc_info'] = True
+        return func(*args,**kwargs)
+    return _append_exc
+
+
 log = Logger.getLogger()
+log.data = logging.getLogger('data').info
+log.exception = append_exc(log.error)
 
 del Logger
