@@ -17,6 +17,7 @@ setup(
         'python-dateutil>=2.6.1',
         'pytz==2017.2',
         'psutil>=5.3.1',
-        'protobuf>=3.4.0'
+        'protobuf>=3.4.0',
+        'tornado>=4.5.2'
       ],
 )
