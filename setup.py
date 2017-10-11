@@ -1,4 +1,5 @@
 from distutils.core import setup
+
 setup(
     name='sakura',
     packages=['sakura'],
@@ -10,4 +11,12 @@ setup(
     maintainer_email='sakura@nonono.rocks',
     url='https://github.com/nevermoreluo/sakura',
     download_url='https://github.com/nevermoreluo/sakura/archive/master.zip',
+    install_requires=[
+        'ipython>=5.5.0',
+        'pycrypto>=2.6.1',
+        'python-dateutil>=2.6.1',
+        'pytz==2017.2',
+        'psutil>=5.3.1',
+        'protobuf>=3.4.0'
+      ],
 )
