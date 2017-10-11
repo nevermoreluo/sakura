@@ -18,7 +18,7 @@ else:
 
     byteshex = lambda b: b.encode("hex")
     bytesunhex = lambda b: b.decode("hex")
-
+    xrange = xrange
     integer_types = (int, long)
 
     def v_iteritems(d):
