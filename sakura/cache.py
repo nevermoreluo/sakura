@@ -14,23 +14,19 @@ _PY2 = sys.version_info[0] == 2
 
 
 if _PY2:
-
     _integer_types = (int, long)
-
     _iteritems = lambda d: d.iteritems()
 
     def _to_native(x, charset='utf-8', errors='strict'):
         if x is None or isinstance(x, str):
             return x
         return x.encode(charset, errors)
-
 else:
-
     _integer_types = (int, )
-
     xrange = range
 
     _iteritems = lambda d: iter(d.items())
+
 
     def _to_native(x, charset='utf-8', errors='strict'):
         if x is None or isinstance(x, str):

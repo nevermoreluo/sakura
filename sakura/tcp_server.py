@@ -71,7 +71,7 @@ class TcpEndpoint(object):
 
 
 class WorkerTask(object):
-    def __init__(self, client, cmd, packet=''):
+    def __init__(self, client, cmd, packet=b''):
         self.client = client
         self.cmd = cmd
         self.packet = packet
@@ -310,7 +310,7 @@ class GTcpServer(TCPServer):
             # log.error('tcp_server_close_conn_not_found|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
             log.error('tcp_server_close_conn_not_found|id=%s,remote=%s', byteshex(client.id), client.remote_address)
             return
-        self._handle_task(client, GTCP_CMD_DISCONNECT, '')
+        self._handle_task(client, GTCP_CMD_DISCONNECT, b'')
         del self._clients[client.id]
 
     def _on_worker_packet(self, worker, data):
