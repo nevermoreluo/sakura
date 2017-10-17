@@ -282,7 +282,7 @@ class GTcpServer(TCPServer):
             # log.error('tcp_server_dup_client|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
             log.error('tcp_server_dup_client|id=%s,remote=%s', client.id, client.remote_address)
         self._clients[client.id] = client
-        self._handle_task(client, GTCP_CMD_CONNECT, '')
+        self._handle_task(client, GTCP_CMD_CONNECT, b'')
         # log.info('tcp_server_client_connect|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
         log.info('tcp_server_client_connect|id=%s,remote=%s', client.id, client.remote_address)
 
@@ -293,7 +293,7 @@ class GTcpServer(TCPServer):
         log.info('tcp_server_worker_connect|id=%s,remote=%s', worker.id, worker.remote_address)
         self._on_worker_idle(worker)
 
-    def _handle_task(self, client, cmd, data=''):
+    def _handle_task(self, client, cmd, data=b''):
         task = WorkerTask(client, cmd, data)
         if self._idle_workers.empty():
             self._waiting_tasks.put(task)
@@ -319,7 +319,7 @@ class GTcpServer(TCPServer):
         if packet_size < GTCP_HEADER_SIZE:
             # log.error('tcp_worker_reply_error|client_id=%s,client=%s,reply=%s', client.id.encode('hex'), client.remote_address, data.encode('hex'))
             log.error('tcp_worker_reply_error|client_id=%s,client=%s,reply=%s', byteshex(client.id),
-                      client.remote_address, data.encode('hex'))
+                      client.remote_address, byteshex(data))
             worker.running_task.client.close()
             return
         reply_cmd = data[:1]

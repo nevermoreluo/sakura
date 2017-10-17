@@ -62,7 +62,7 @@ class GTcpAsyncClient(object):
             except:
                 log.exception('tcp_asnyc_client_on_connect_exception|id=%s,address=%s,port=%s', self._id, self._address, self._port)
         if self._pending_buffer:
-            self._stream.write(''.join(self._pending_buffer))
+            self._stream.write(b''.join(self._pending_buffer))
             self._pending_buffer = []
         self._recv_header()
 
