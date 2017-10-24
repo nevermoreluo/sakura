@@ -28,7 +28,7 @@ class GTcpAsyncClient(object):
         return self._id
 
     def send(self, packet):
-        packet_length = struct.pack('<I', len(packet))
+        packet_length = struct.pack('!I', len(packet))
         if self._stream is not None:
             self._stream.write(packet_length + packet)
         else:
@@ -84,7 +84,7 @@ class GTcpAsyncClient(object):
         self._stream.read_bytes(self.HEADER_SIZE, self._on_recv_header)
 
     def _on_recv_header(self, data):
-        (body_size,) = struct.unpack('<I', data)
+        (body_size,) = struct.unpack('!I', data)
         if body_size > self.TCP_MAX_PACKET_SIZE:
             log.error('tcp_asnyc_client_body_size_overflow|id=%s,size=%u', self._id, body_size)
             self._close()

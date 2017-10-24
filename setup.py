@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name='sakura',
     packages=['sakura'],
-    version='0.1.3',
+    version='0.1.4',
     description='sakura',
     author='None',
     author_email='None',
