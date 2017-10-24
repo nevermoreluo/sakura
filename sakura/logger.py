@@ -287,7 +287,6 @@ MIDDLEWARE_CLASSES = (
 
 
 import logging.handlers
-from sakura import config
 
 class Logger:
     logger = None
@@ -300,10 +299,7 @@ class Logger:
               "c": logging.CRITICAL}  # 严重错误信息 50
 
     log_level = "d"
-    log_config = getattr(config, "LOGGER_CONFIG", None)
     log_file = "/var/log/sakura/sakura.log"
-    if log_config:
-        log_file = log_config.get("log_file")
     log_max_byte = 10 * 1024 * 1024
     log_backup_count = 5
 
