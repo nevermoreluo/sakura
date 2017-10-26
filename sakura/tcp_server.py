@@ -81,9 +81,10 @@ class GTcpConnection(object):
 
     HEADER_SIZE = 4
 
-    def __init__(self, stream, address, config, on_packet=None, on_close=None):
+    def __init__(self, stream, address, config, on_packet=None, on_close=None, endian="!"):
         self._stream = stream
         self._address = address
+        self._endian = endian
         if stream.socket.family == socket.AF_INET6:
             self._remote_ip = socket.inet_pton(socket.AF_INET6, address[0])
         else:
@@ -127,7 +128,7 @@ class GTcpConnection(object):
         self._stream.write(data)
 
     def send_packet(self, packet):
-        header = struct.pack('<I', len(packet))
+        header = struct.pack('%sI' % self._endian, len(packet))
         self.send(header + packet)
 
     def close(self):
@@ -142,7 +143,7 @@ class GTcpConnection(object):
             log.error('tcp_conn_header_size_error|remote=%s,header=%s', self._remote_address, byteshex(data))
             self._stream.close()
             return
-        (body_size,) = struct.unpack('<I', data)
+        (body_size,) = struct.unpack('%sI' % self._endian, data)
         if body_size >= self._config.TCP_MAX_PACKET_SIZE:
             log.error('tcp_conn_body_size_overflow|remote=%s,size=%u', self._remote_address, body_size)
             self._stream.close()
@@ -278,7 +279,7 @@ class GTcpServer(TCPServer):
 
     def _on_client_connect(self, stream, address):
         client = GTcpConnection(stream, address, self._config, self._on_client_packet,
-                                self._on_client_close)
+                                self._on_client_close, endian="!")
         if client.id in self._clients:
             # log.error('tcp_server_dup_client|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
             log.error('tcp_server_dup_client|id=%s,remote=%s', client.id, client.remote_address)
@@ -288,7 +289,8 @@ class GTcpServer(TCPServer):
         log.info('tcp_server_client_connect|id=%s,remote=%s', client.id, client.remote_address)
 
     def _on_worker_connect(self, stream, address):
-        worker = GTcpConnection(stream, address, self._config, self._on_worker_packet, self._on_worker_close)
+        worker = GTcpConnection(stream, address, self._config, self._on_worker_packet,
+                                self._on_worker_close, endian="<")
         worker.running_task = None
         # log.info('tcp_server_worker_connect|id=%s,remote=%s', worker.id.encode('hex'), worker.remote_address)
         log.info('tcp_server_worker_connect|id=%s,remote=%s', worker.id, worker.remote_address)
