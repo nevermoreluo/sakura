@@ -144,6 +144,7 @@ class GTcpConnection(object):
             self._stream.close()
             return
         (body_size,) = struct.unpack('%sI' % self._endian, data)
+        log.info("offset size info: %s" % struct.unpack('<I', data))
         if body_size >= self._config.TCP_MAX_PACKET_SIZE:
             log.error('tcp_conn_body_size_overflow|remote=%s,size=%u', self._remote_address, body_size)
             self._stream.close()

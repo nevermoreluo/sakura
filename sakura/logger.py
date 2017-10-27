@@ -287,6 +287,7 @@ MIDDLEWARE_CLASSES = (
 
 
 import logging.handlers
+from sakura import config
 
 class Logger:
     logger = None
@@ -300,6 +301,9 @@ class Logger:
 
     log_level = "d"
     log_file = "/var/log/sakura/sakura.log"
+    log_dict = getattr(config, "LOGGER_CONFIG", {})
+    if log_dict:
+        log_file = log_dict.get("log_file", log_file)
     log_max_byte = 10 * 1024 * 1024
     log_backup_count = 5
 
