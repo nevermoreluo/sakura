@@ -553,6 +553,11 @@ class RedisCache(BaseCache):
             keys = [self.key_prefix + key for key in keys]
         return [self.load_object(x) for x in self._client.mget(keys)]
 
+    def get_by_keys(self, keys_pattern):
+        if self.key_prefix:
+            keys_pattern += self.key_prefix
+        return self._client.keys(keys_pattern)
+
     def get_many(self, keys):
         if self.key_prefix:
             query_keys = [self.key_prefix + key for key in keys]
