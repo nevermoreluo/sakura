@@ -333,7 +333,7 @@ def append_exc(func):
 
 
 log = Logger.getLogger()
-log.data = logging.getLogger('data').info
+log.data = Logger.getLogger().info
 log.exception = append_exc(log.error)
 
 del Logger

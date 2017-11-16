@@ -144,7 +144,6 @@ class GTcpConnection(object):
             self._stream.close()
             return
         (body_size,) = struct.unpack('%sI' % self._endian, data)
-        log.info("offset size info: %s" % struct.unpack('<I', data))
         if body_size >= self._config.TCP_MAX_PACKET_SIZE:
             log.error('tcp_conn_body_size_overflow|remote=%s,size=%u', self._remote_address, body_size)
             self._stream.close()
@@ -160,6 +159,7 @@ class GTcpConnection(object):
         if self._on_close_callback is not None:
             self._on_close_callback(self)
 
+
 class CallbackTcpServer(TCPServer):
 
     def __init__(self, on_connect=None, *args, **kwargs):
@@ -169,6 +169,7 @@ class CallbackTcpServer(TCPServer):
     def handle_stream(self, stream, address):
         if self._on_connect_callback:
             self._on_connect_callback(stream, address)
+
 
 class Processor(object):
 
@@ -187,11 +188,9 @@ class Processor(object):
             try:
                 request = self._client.receive()
                 if request is None:
-                    # log.warn('tcp_worker_lost_connection|client_id=%s,client=%s', self._client.id.encode('hex'), self._client.remote_address)
                     log.warn('tcp worker lost_connection|client_id=%s,client=%s', byteshex(self._id), self._client._address)
                     self._client.close()
                 elif len(request) < GTCP_HEADER_SIZE:
-                    # log.error('tcp_worker_request_packet_error|client_id=%s,client=%s,request=%s', self._client.id.encode('hex'), self._client.remote_address, request.encode('hex'))
                     log.error('tcp_worker_request_packet_error|client_id=%s,client=%s,request=%s', byteshex(self._id), self._client._address, byteshex(request))
                     self._client.close()
                 else:
