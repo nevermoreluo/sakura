@@ -42,7 +42,7 @@ class GTcpAsyncClient(object):
         self._pending_buffer = []
 
     def _async_connect(self):
-        log.info('tcp_asnyc_client_try_connect|id=%s,address=%s,port=%s', self._id, self._address, self._port)
+        log.debug('tcp_asnyc_client_try_connect|id=%s,address=%s,port=%s', self._id, self._address, self._port)
         TCPClient().connect(self._address, self._port).add_done_callback(self._on_connect)
 
     def _on_connect(self, future):
@@ -53,7 +53,7 @@ class GTcpAsyncClient(object):
             self._close()
             self._async_connect()
             return
-        log.info('tcp_asnyc_client_connect|id=%s,address=%s,port=%s', self._id, self._address, self._port)
+        log.debug('tcp_asnyc_client_connect|id=%s,address=%s,port=%s', self._id, self._address, self._port)
         self._stream.set_close_callback(self._on_close)
         self._set_keep_alive()
         if self._on_connect_callback is not None:
@@ -72,7 +72,7 @@ class GTcpAsyncClient(object):
             self._stream = None
 
     def _on_close(self):
-        log.info('tcp_asnyc_client_disconnect|id=%s,address=%s,port=%s', self._id, self._address, self._port)
+        log.debug('tcp_asnyc_client_disconnect|id=%s,address=%s,port=%s', self._id, self._address, self._port)
         if self._on_disconnect_callback is not None:
             try:
                 self._on_disconnect_callback(self)

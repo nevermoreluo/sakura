@@ -182,7 +182,7 @@ class Processor(object):
         random.seed()
         self.on_init()
         from sakura.gtcpclient import GTcpClient
-        log.info('tcp_worker_start|id=%d', self._id)
+        log.debug('tcp_worker_start|id=%d', self._id)
         self._client = GTcpClient(self._config.WORK_ENDPOINT['address'], self._config.WORK_ENDPOINT['port'], 0)
         while True:
             try:
@@ -285,15 +285,15 @@ class GTcpServer(TCPServer):
             log.error('tcp_server_dup_client|id=%s,remote=%s', client.id, client.remote_address)
         self._clients[client.id] = client
         self._handle_task(client, GTCP_CMD_CONNECT, b'')
-        # log.info('tcp_server_client_connect|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
-        log.info('tcp_server_client_connect|id=%s,remote=%s', client.id, client.remote_address)
+        # log.debug('tcp_server_client_connect|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
+        log.debug('tcp_server_client_connect|id=%s,remote=%s', client.id, client.remote_address)
 
     def _on_worker_connect(self, stream, address):
         worker = GTcpConnection(stream, address, self._config, self._on_worker_packet,
                                 self._on_worker_close, endian="<")
         worker.running_task = None
-        # log.info('tcp_server_worker_connect|id=%s,remote=%s', worker.id.encode('hex'), worker.remote_address)
-        log.info('tcp_server_worker_connect|id=%s,remote=%s', worker.id, worker.remote_address)
+        # log.debug('tcp_server_worker_connect|id=%s,remote=%s', worker.id.encode('hex'), worker.remote_address)
+        log.debug('tcp_server_worker_connect|id=%s,remote=%s', worker.id, worker.remote_address)
         self._on_worker_idle(worker)
 
     def _handle_task(self, client, cmd, data=b''):
@@ -307,8 +307,8 @@ class GTcpServer(TCPServer):
         self._handle_task(client, GTCP_CMD_RELAY, data)
 
     def _on_client_close(self, client):
-        # log.info('tcp_server_client_close|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
-        log.info('tcp_server_client_close|id=%s,remote=%s', byteshex(client.id), client.remote_address)
+        # log.debug('tcp_server_client_close|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
+        log.debug('tcp_server_client_close|id=%s,remote=%s', byteshex(client.id), client.remote_address)
         if client.id not in self._clients:
             # log.error('tcp_server_close_conn_not_found|id=%s,remote=%s', client.id.encode('hex'), client.remote_address)
             log.error('tcp_server_close_conn_not_found|id=%s,remote=%s', byteshex(client.id), client.remote_address)

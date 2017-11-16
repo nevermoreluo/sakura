@@ -131,7 +131,7 @@ class GTcpClient(object):
                 self._socket.settimeout(self._timeout)
             self._set_keep_alive()
             self._socket.connect((self._address, self._port))
-            log.info('tcp_connect|address=%s,port=%u', self._address, self._port)
+            log.debug('tcp_connect|address=%s,port=%u', self._address, self._port)
             return True
         except Exception as ex:
             log.exception('tcp_connect_fail|address=%s,port=%u,ex=%s', self._address, self._port, ex)
