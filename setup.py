@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='sakura',
     packages=['sakura'],
-    version='0.2.1',
+    version='0.2.2',
     description='sakura',
     author='None',
     author_email='None',
